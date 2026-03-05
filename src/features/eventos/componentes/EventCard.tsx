@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import type { Evento } from "../../../domain";
-import { Button, Card } from "../../../shared/ui";
+import { Button, Card, Tag } from "../../../shared/ui";
+
+const FALLBACK_IMG = "https://picsum.photos/800/450?blur=2";
 
 const formatDate = (d: string) =>
   new Date(`${d}T00:00:00`).toLocaleDateString("pt-BR", {
@@ -14,52 +16,61 @@ interface EventCardProps {
   onDetails: (evento: Evento) => void;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({
+export const EventCard = React.memo(function EventCard({
   evento,
   onEdit,
   onDelete,
   onDetails,
-}) => {
+}: EventCardProps) {
+  const dateLabel = useMemo(
+    () => `${formatDate(evento.data)}${evento.hora ? ` • ${evento.hora}` : ""}`,
+    [evento.data, evento.hora]
+  );
+
+  const handleImgError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = FALLBACK_IMG;
+  }, []);
+
+  const handleDetails = useCallback(() => onDetails(evento), [onDetails, evento]);
+  const handleEdit = useCallback(() => onEdit(evento), [onEdit, evento]);
+  const handleDelete = useCallback(() => onDelete(evento.id), [onDelete, evento.id]);
+
   return (
-    <Card as="article" className="overflow-hidden flex flex-col">
+    <Card as="article" className="overflow-hidden">
       <img
-        src={evento.img || ""}
-        alt="Imagem do evento"
+        src={evento.img || FALLBACK_IMG}
+        alt={evento.titulo ? `Imagem do evento: ${evento.titulo}` : "Imagem do evento"}
         className="h-40 w-full object-cover"
-        onError={(e) => {
-          (e.currentTarget as HTMLImageElement).src =
-            "https://picsum.photos/800/450?blur=2";
-        }}
+        loading="lazy"
+        onError={handleImgError}
       />
-      <div className="p-4 flex-1 flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2 text-xs">
-          <span className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 font-semibold">
-            {evento.cat}
-          </span>
-          <span className="text-[#9fb0c8]">
-            {formatDate(evento.data)} • {evento.hora || ""}
-          </span>
+
+      <div className="p-4 flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <Tag variant="primary">{evento.cat}</Tag>
+          <span className="text-xs text-slate-500">{dateLabel}</span>
         </div>
-        <h3 className="text-base font-extrabold">{evento.titulo}</h3>
-        <p className="text-xs text-[#9fb0c8]">
+
+        <h3 className="text-base font-semibold text-slate-900 line-clamp-2">
+          {evento.titulo}
+        </h3>
+
+        <p className="text-sm text-slate-600 line-clamp-1">
           {evento.local} • {evento.preco}
         </p>
-        <div className="mt-3 flex flex-wrap gap-2 text-xs">
-          <Button size="sm" onClick={() => onDetails(evento)}>
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Button size="sm" variant="secondary" onClick={handleDetails}>
             Detalhes
           </Button>
-          <Button size="sm" onClick={() => onEdit(evento)}>
+          <Button size="sm" variant="secondary" onClick={handleEdit}>
             Editar
           </Button>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => onDelete(evento.id)}
-          >
+          <Button size="sm" variant="danger" onClick={handleDelete}>
             Excluir
           </Button>
         </div>
       </div>
     </Card>
   );
-};
+});

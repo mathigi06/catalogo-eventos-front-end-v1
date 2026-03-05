@@ -1,6 +1,16 @@
 // src/shared/ui/index.ts
 export * from "./Button";
+export * from "./ChipGroup";
+export * from "./ConfirmDialog";
+export * from "./FeaturedCarousel";
 export * from "./IconButton";
+export * from "./Modal";
+export * from "./RoundedSelect";
+export * from "./SelectField";
+export * from "./SectionHeader";
+export * from "./Tag";
+export * from "./TextAreaField";
+export * from "./TextField";
 export * from "./Card";
 export * from "./Modal";
 export * from "./TextField";
@@ -8,3 +18,4 @@ export * from "./SelectField";
 export * from "./TextAreaField";
 export * from "./Tag";
 export * from "./SectionHeader";
+export * from "./HeroSection";

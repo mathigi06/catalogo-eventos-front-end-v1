@@ -1,26 +1,26 @@
+// src/app/App.tsx
+import {
+  RouterProvider,
+  createBrowserRouter,
+  type RouteObject,
+} from "react-router-dom";
+import { AppRoutes } from "./routes";
+import { ConfirmProvider } from "../shared/ui/confirm/ConfirmProvider";
 
+function toRRRoutes(routes: typeof AppRoutes): RouteObject[] {
+  return routes.map((r) => ({
+    path: r.path,
+    element: r.element,
+    children: r.children ? toRRRoutes(r.children) : undefined,
+  }));
+}
 
-import React from "react";
-import { AppRoutes, type RouteConfig } from "./routes";
-import { AppDataProvider } from "../context/appDataContext";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+const router = createBrowserRouter(toRRRoutes(AppRoutes));
 
-
-const renderRoutes = (routes: RouteConfig[]) => {
-  return routes.map((route, index) => (
-    <Route key={index} path={route.path} element={route.element}>
-      {route.children && renderRoutes(route.children)}
-    </Route>
-  ));
-};
-
-export const App: React.FC = () => {
+export default function App() {
   return (
-    <AppDataProvider>
-      <Router>
-        <Routes>{renderRoutes(AppRoutes)}</Routes>
-      </Router>
-    </AppDataProvider>
+    <ConfirmProvider>
+          <RouterProvider router={router} />
+    </ConfirmProvider>
   );
-};
-
+}

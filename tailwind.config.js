@@ -1,8 +1,6 @@
+// tailwind.config.js
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -13,6 +11,12 @@ export default {
         brand1: "#20aa4b",
         brand2: "#7cffc1",
         brand3: "#48cb76",
+        brand: {
+          primary: "#0098C9",
+          success: "#0D8B54",
+          warning: "#DFDA0C",
+          error: "#C90000",
+        },
       },
       borderRadius: {
         radius: "20px",
@@ -20,4 +24,4 @@ export default {
     },
   },
   plugins: [],
-}
+};

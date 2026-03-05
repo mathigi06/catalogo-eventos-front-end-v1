@@ -1,10 +1,9 @@
 // src/shared/ui/Button.tsx
-import type { ButtonHTMLAttributes, PropsWithChildren } from 'react';
-import {
-  forwardRef,
-} from "react";
+import { forwardRef } from "react";
+import type { ButtonHTMLAttributes, PropsWithChildren, ReactNode } from "react";
+import { cn } from "./cn";
 
-type Variant = "primary" | "secondary" | "danger" | "ghost";
+type Variant = "primary" | "secondary" | "success" | "warning" | "danger" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 export interface ButtonProps
@@ -13,27 +12,65 @@ export interface ButtonProps
   variant?: Variant;
   size?: Size;
   fullWidth?: boolean;
+
+  loading?: boolean;
+  startIcon?: ReactNode;
+  endIcon?: ReactNode;
 }
 
 const base =
-  "inline-flex items-center justify-center rounded-xl border text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-[#20aa4b] disabled:opacity-60 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-2 " +
+  "select-none whitespace-nowrap " +
+  "rounded-xl border font-medium " +
+  "transition outline-none " +
+  "focus-visible:ring-2 focus-visible:ring-slate-900/10 focus-visible:ring-offset-2 focus-visible:ring-offset-white " +
+  "disabled:opacity-60 disabled:cursor-not-allowed";
 
 const variants: Record<Variant, string> = {
   primary:
-    "border-[#48cb76]/60 bg-gradient-to-r from-[#20aa4b]/30 to-[#48cb76]/30 hover:from-[#20aa4b]/40 hover:to-[#48cb76]/40 text-[#007389]",
+    "border-brand-primary/40 bg-brand-primary text-white shadow-sm hover:brightness-95 active:brightness-90",
   secondary:
-    "border-white/10 bg-white/10 hover:bg-white/15 text-[#607389]",
+    "border-slate-200 bg-white text-slate-900 shadow-sm hover:bg-slate-50 active:bg-slate-100",
+  success:
+    "border-brand-success/40 bg-brand-success text-white shadow-sm hover:brightness-95 active:brightness-90",
+  warning:
+    "border-brand-warning/50 bg-brand-warning text-slate-900 shadow-sm hover:brightness-98 active:brightness-95",
   danger:
-    "border-red-500/50 bg-red-500/10 hover:bg-red-500/20 text-[#951d0b]",
+    "border-red-500/30 bg-red-500 text-white shadow-sm hover:brightness-95 active:brightness-90",
   ghost:
-    "border-transparent bg-transparent hover:bg-white/5 text-[#9e582a]",
+    "border-transparent bg-transparent text-slate-900 hover:bg-slate-900/5 active:bg-slate-900/10",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "px-3 py-1 text-xs",
-  md: "px-4 py-2 text-sm",
-  lg: "px-5 py-3 text-sm",
+  sm: "h-9 px-3 text-sm",
+  md: "h-10 px-4 text-sm",
+  lg: "h-12 px-5 text-base",
 };
+
+function Spinner() {
+  return (
+    <svg
+      className="h-4 w-4 animate-spin"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+        fill="none"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+      />
+    </svg>
+  );
+}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -41,21 +78,31 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = "secondary",
       size = "md",
       fullWidth,
-      className = "",
+      className,
       type = "button",
+      loading,
+      startIcon,
+      endIcon,
+      disabled,
+      children,
       ...rest
     },
     ref
   ) => {
+    const isDisabled = disabled || loading;
+
     return (
       <button
         ref={ref}
         type={type}
-        className={`${base} ${variants[variant]} ${sizes[size]} ${
-          fullWidth ? "w-full" : ""
-        } ${className}`}
+        disabled={isDisabled}
+        className={cn(base, variants[variant], sizes[size], fullWidth && "w-full", className)}
         {...rest}
-      />
+      >
+        {loading ? <Spinner /> : startIcon ? <span aria-hidden="true">{startIcon}</span> : null}
+        <span>{children}</span>
+        {endIcon ? <span aria-hidden="true">{endIcon}</span> : null}
+      </button>
     );
   }
 );

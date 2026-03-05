@@ -1,4 +1,3 @@
-import type { AppState } from "../../context/appDataContext";
 const createId = () => {
     if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
         return crypto.randomUUID() as string;
@@ -100,4 +99,4 @@ export default {
             ]
         }
     ]
-} as AppState;
+};

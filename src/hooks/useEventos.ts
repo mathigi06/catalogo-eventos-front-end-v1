@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useAppData } from "../context/appDataContext";
 import type { Evento } from "../domain";
+import { useEventosStore } from "../context/eventosStore";
 
 export interface EventosFilters {
   search?: string;
@@ -17,13 +17,8 @@ export interface EventosFilters {
  * - Exponde operações de CRUD (via contexto)
  */
 export function useEventos(filters?: EventosFilters) {
-  const {
-    state: { eventos },
-    createOrUpdateEvento,
-    deleteEvento,
-    loading,
-    error,
-  } = useAppData();
+  const { eventos, loading, error, createOrUpdateEvento, deleteEvento } =
+    useEventosStore();
 
   // Ordena eventos por data (mais antigos primeiro)
   const eventosOrdenados = useMemo(

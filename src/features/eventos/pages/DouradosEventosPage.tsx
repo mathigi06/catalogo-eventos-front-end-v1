@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from "react";
-import { useAppData } from "../../../context/appDataContext";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import type { Cidade, Evento, PontoTuristico } from "../../../domain";
 import { Button, Card } from "../../../shared/ui";
 import { CidadeFormModal } from "../componentes/CidadeFormModal";
 import { CitiesSection } from "../componentes/CitiesSection";
-import { EventFormModal } from "../componentes/EventFormModal";
 import { EventList } from "../componentes/EventList";
 import { PontoFormModal } from "../componentes/PontoFormModal";
 import { TourismSection } from "../componentes/TourismSection";
+import { useEventosStore } from "../../../context/eventosStore";
+import { useCidadesStore } from "../../../context/cidadesStore";
 
 export type Tab = "eventos" | "turismo" | "cidades";
 
@@ -17,29 +17,37 @@ const formatDate = (d: string) =>
   });
 
 export const DouradosEventosPage: React.FC = () => {
-  const {
-    state: { eventos, cidades },
-    createOrUpdateEvento,
-    deleteEvento,
-    createOrUpdateCidade,
-    deleteCidade,
-    createOrUpdatePonto,
-    deletePonto,
-  } = useAppData();
 
-  const [tab, setTab] = useState<Tab>("eventos");
-  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const { eventos, createOrUpdateEvento, deleteEvento } =
+    useEventosStore();
+  const { cidades, createOrUpdateCidade, deleteCidade, createOrUpdatePonto, deletePonto } =
+    useCidadesStore();
+  
+  const EventFormModal = React.lazy(
+    () => import("../componentes/EventFormModal"),
+  );
 
-  // filtros de eventos
-  const [search, setSearch] = useState("");
-  const [cat, setCat] = useState("");
-  const [dataMin, setDataMin] = useState("");
-
-  // turismo
   const [cidadeSelecionadaId, setCidadeSelecionadaId] = useState<string | null>(
     () => cidades[0]?.id ?? null,
   );
+  useEffect(() => {
+    if (!cidadeSelecionadaId && cidades.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCidadeSelecionadaId(cidades[0].id);
+    }
+  }, [cidades, cidadeSelecionadaId]);
+
+  const [tab, setTab] = useState<Tab>("eventos");
+
+  // filtros de eventos
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [search, setSearch] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [cat, setCat] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [dataMin, setDataMin] = useState("");
+
+  // turismo
   const [buscaPonto, setBuscaPonto] = useState("");
 
   // modais
@@ -47,14 +55,6 @@ export const DouradosEventosPage: React.FC = () => {
   const [cidadeEdit, setCidadeEdit] = useState<Cidade | null>(null);
   const [pontoEdit, setPontoEdit] = useState<PontoTuristico | null>(null);
   const [pontoCidadeId, setPontoCidadeId] = useState<string | null>(null);
-
-  const handleSideMenuOpen = () => {
-    setIsSideMenuOpen((prev) => !prev);
-  };
-
-  const handleShowFilters = () => {
-    setShowFilters((prev) => !prev);
-  };
 
   const eventosFiltrados = useMemo(
     () =>
@@ -269,12 +269,16 @@ ${ev.desc}`,
         </section>
       )}
       {/* modais */}
-      <EventFormModal
-        open={!!eventoEdit}
-        initialValue={eventoEdit}
-        onClose={() => setEventoEdit(null)}
-        onSave={handleSalvarEvento}
-      />
+      {eventoEdit && (
+        <Suspense fallback={null}>
+          <EventFormModal
+            open={!!eventoEdit}
+            initialValue={eventoEdit}
+            onClose={() => setEventoEdit(null)}
+            onSave={handleSalvarEvento}
+          />
+        </Suspense>
+      )}
 
       <CidadeFormModal
         open={!!cidadeEdit}

@@ -2,10 +2,14 @@ import type { Evento } from "./evento";
 import type { PontoTuristico } from "./pontoTuristico";
 
 export interface Cidade {
-  id: string;
+  id: number;
   nome: string;
   uf: string;
   desc: string;
-  pontos: PontoTuristico[];
+  slug?: string;
+  imagem?: string;
+  pontosTuristicos: PontoTuristico[];
   eventos: Evento[];
 }
+
+

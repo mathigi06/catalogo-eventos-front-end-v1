@@ -1,6 +1,6 @@
 import React from "react";
 import type { Evento } from "../../../domain";
-import { Button } from "../../../shared/ui";
+import { Button, Card } from "../../../shared/ui";
 import { EventCard } from "./EventCard";
 
 interface EventListProps {
@@ -11,21 +11,27 @@ interface EventListProps {
   onDetails: (evento: Evento) => void;
 }
 
-export const EventList: React.FC<EventListProps> = ({
+export const EventList = React.memo(function EventList({
   eventos,
   onNewEvent,
   onEditEvent,
   onDeleteEvent,
   onDetails,
-}) => {
+}: EventListProps) {
   if (eventos.length === 0) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-[#9fb0c8] flex flex-col gap-3">
-        <span>Nenhum evento encontrado com os filtros atuais.</span>
-        <Button variant="primary" size="sm" onClick={onNewEvent}>
-          + Cadastrar primeiro evento
-        </Button>
-      </div>
+      <Card className="p-5">
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-slate-600">
+            Nenhum evento encontrado com os filtros atuais.
+          </p>
+          <div>
+            <Button variant="primary" size="sm" onClick={onNewEvent}>
+              + Cadastrar primeiro evento
+            </Button>
+          </div>
+        </div>
+      </Card>
     );
   }
 
@@ -36,6 +42,7 @@ export const EventList: React.FC<EventListProps> = ({
           + Novo evento
         </Button>
       </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {eventos.map((ev) => (
           <EventCard
@@ -49,4 +56,4 @@ export const EventList: React.FC<EventListProps> = ({
       </div>
     </div>
   );
-};
+});

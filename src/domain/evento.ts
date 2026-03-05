@@ -1,3 +1,5 @@
+import type { Cidade } from "./cidade";
+
 export type EventoCategoria =
   | "Show"
   | "Esporte"
@@ -7,7 +9,7 @@ export type EventoCategoria =
 
 // src/domain/evento.ts
 export interface Evento {
-  id: string;
+  id: number;
   titulo: string;
   cat: string;
   data: string;
@@ -16,5 +18,8 @@ export interface Evento {
   preco: string;
   img: string;
   desc: string;
+  destaque?: boolean;
+  cidadeId: number;
+  cidade: Cidade;
 }
 

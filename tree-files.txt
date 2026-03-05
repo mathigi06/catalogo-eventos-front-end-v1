@@ -1,0 +1,94 @@
+.
+├── README.md
+├── README_.md
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── public
+│   ├── celeiro_ms_logo.jpg
+│   ├── icone.ico
+│   └── vite.svg
+├── src
+│   ├── App.css
+│   ├── app
+│   │   ├── App.tsx
+│   │   └── routes.tsx
+│   ├── assets
+│   │   ├── celeiro_ms_logo.jpg
+│   │   ├── icone.ico
+│   │   └── react.svg
+│   ├── bff
+│   │   ├── appBff.ts
+│   │   ├── data
+│   │   │   └── index.ts
+│   │   └── fake-api
+│   │       └── db.json
+│   ├── context
+│   │   └── appDataContext.tsx
+│   ├── domain
+│   │   ├── cidade.ts
+│   │   ├── evento.ts
+│   │   ├── index.ts
+│   │   └── pontoTuristico.ts
+│   ├── features
+│   │   ├── admin
+│   │   │   ├── componentes
+│   │   │   └── pages
+│   │   ├── eventos
+│   │   │   ├── componentes
+│   │   │   │   ├── CidadeFormModal.tsx
+│   │   │   │   ├── CitiesSection.tsx
+│   │   │   │   ├── EventCard.tsx
+│   │   │   │   ├── EventFilters.tsx
+│   │   │   │   ├── EventFormModal.tsx
+│   │   │   │   ├── EventList.tsx
+│   │   │   │   ├── Header.tsx
+│   │   │   │   ├── PontoFormModal.tsx
+│   │   │   │   ├── SideBar.tsx
+│   │   │   │   └── TourismSection.tsx
+│   │   │   └── pages
+│   │   │       └── DouradosEventosPage.tsx
+│   │   └── pontos-turisticos
+│   │       ├── componentes
+│   │       └── pages
+│   ├── hooks
+│   │   └── useEventos.ts
+│   ├── http
+│   │   └── api.ts
+│   ├── index.css
+│   ├── main.tsx
+│   ├── pages
+│   │   ├── AboutPage.tsx
+│   │   ├── Details.tsx
+│   │   ├── DetailsEventsPage.tsx
+│   │   ├── DetailsPontoPage.tsx
+│   │   ├── EventosPage.tsx
+│   │   └── TourismPage.tsx
+│   └── shared
+│       ├── templates
+│       │   └── DefaultTemplate.tsx
+│       └── ui
+│           ├── Button.tsx
+│           ├── Card.tsx
+│           ├── ChipGroup.tsx
+│           ├── ChipToggle.tsx
+│           ├── IconButton.tsx
+│           ├── Modal.tsx
+│           ├── RoundedSelect.tsx
+│           ├── SectionHeader.tsx
+│           ├── SelectField.tsx
+│           ├── Tag.tsx
+│           ├── TextAreaField.tsx
+│           ├── TextField.tsx
+│           ├── cn.ts
+│           └── index.ts
+├── tailwind.config.js
+├── tree-files.txt
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
+
+26 directories, 66 files

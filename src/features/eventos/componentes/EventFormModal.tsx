@@ -9,7 +9,7 @@ interface EventFormModalProps {
   onSave: (data: Omit<Evento, "id"> & { id?: string }) => void;
 }
 
-export const EventFormModal: React.FC<EventFormModalProps> = ({
+const EventFormModal: React.FC<EventFormModalProps> = ({
   open,
   initialValue,
   onClose,
@@ -160,3 +160,5 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
     </Modal>
   );
 };
+
+export default EventFormModal;

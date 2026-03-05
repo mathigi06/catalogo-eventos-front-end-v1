@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useId } from "react";
+import { cn } from "./cn";
 
 type Option = { value: string; label: string; disabled?: boolean };
 
 type RoundedSelectProps = {
+  id?: string;
   label?: string;
   placeholder?: string;
   value?: string;
@@ -13,6 +15,7 @@ type RoundedSelectProps = {
 };
 
 export function RoundedSelect({
+  id,
   label,
   placeholder = "Selecione...",
   value,
@@ -21,6 +24,9 @@ export function RoundedSelect({
   disabled,
   className,
 }: RoundedSelectProps) {
+  const reactId = useId();
+  const buttonId = id ?? `select-${reactId}`;
+
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
 
@@ -59,17 +65,13 @@ export function RoundedSelect({
     return () => document.removeEventListener("keydown", onDocKeyDown);
   }, [open]);
 
-  // const enabledOptions = options.filter((o) => !o.disabled);
-
   function openMenu() {
     if (disabled) return;
     setOpen(true);
 
-    // posiciona o foco “virtual” no selecionado ou no primeiro habilitado
     const idx = options.findIndex((o) => o.value === value && !o.disabled);
     setActiveIndex(idx >= 0 ? idx : options.findIndex((o) => !o.disabled));
 
-    // dá tempo de renderizar a lista
     setTimeout(() => listRef.current?.focus(), 0);
   }
 
@@ -86,10 +88,10 @@ export function RoundedSelect({
 
   function onButtonKeyDown(e: React.KeyboardEvent) {
     if (disabled) return;
-
     if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      open ? setOpen(false) : openMenu();
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      open ? closeMenu() : openMenu();
     }
   }
 
@@ -130,13 +132,16 @@ export function RoundedSelect({
   }
 
   return (
-    <div ref={rootRef} className={["w-full", className].filter(Boolean).join(" ")}>
+    <div ref={rootRef} className={cn("w-full", className)}>
       {label ? (
-        <label className="mb-1 block text-sm font-medium text-slate-700">{label}</label>
+        <label htmlFor={buttonId} className="mb-1 block text-sm font-medium text-slate-700">
+          {label}
+        </label>
       ) : null}
 
       <div className="relative">
         <button
+          id={buttonId}
           ref={buttonRef}
           type="button"
           disabled={disabled}
@@ -144,20 +149,21 @@ export function RoundedSelect({
           aria-expanded={open}
           onClick={() => (open ? closeMenu() : openMenu())}
           onKeyDown={onButtonKeyDown}
-          className={[
+          className={cn(
             "flex w-full items-center justify-between gap-3",
-            "rounded-xl border border-slate-300 bg-white px-3 py-2 text-left",
-            "shadow-sm outline-none transition",
-            "focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400",
-            disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:border-slate-400",
-          ].join(" ")}
+            "rounded-xl border bg-white px-3 py-2 text-left text-sm text-slate-900 shadow-sm",
+            "transition outline-none",
+            "focus-visible:ring-2 focus-visible:ring-slate-900/10 focus-visible:ring-offset-2 focus-visible:ring-offset-white",
+            "border-slate-300 focus-visible:border-brand-primary",
+            disabled ? "cursor-not-allowed opacity-60 bg-slate-50" : "cursor-pointer hover:bg-slate-50"
+          )}
         >
           <span className={selected ? "text-slate-900" : "text-slate-400"}>
             {selected ? selected.label : placeholder}
           </span>
 
           <svg
-            className={["h-4 w-4 text-slate-500 transition", open ? "rotate-180" : ""].join(" ")}
+            className={cn("h-4 w-4 text-slate-500 transition", open && "rotate-180")}
             viewBox="0 0 20 20"
             fill="currentColor"
             aria-hidden="true"
@@ -175,14 +181,14 @@ export function RoundedSelect({
             ref={listRef}
             tabIndex={-1}
             role="listbox"
-            aria-activedescendant={activeIndex >= 0 ? `opt-${activeIndex}` : undefined}
+            aria-activedescendant={activeIndex >= 0 ? `opt-${buttonId}-${activeIndex}` : undefined}
             onKeyDown={onListKeyDown}
-            className={[
+            className={cn(
               "absolute z-50 mt-2 w-full",
-              "rounded-2xl border border-slate-200 bg-white p-2",
-              "shadow-lg outline-none",
-              "max-h-64 overflow-auto",
-            ].join(" ")}
+              "rounded-2xl border border-slate-200 bg-white p-1 shadow-lg",
+              "outline-none",
+              "max-h-64 overflow-auto"
+            )}
           >
             {options.length === 0 ? (
               <li className="rounded-xl px-3 py-2 text-sm text-slate-500">Sem opções</li>
@@ -193,26 +199,29 @@ export function RoundedSelect({
 
                 return (
                   <li
-                    id={`opt-${idx}`}
+                    id={`opt-${buttonId}-${idx}`}
                     key={opt.value}
                     role="option"
                     aria-selected={isSelected}
                     onMouseEnter={() => setActiveIndex(idx)}
-                    onMouseDown={(e) => e.preventDefault()} // evita perder foco antes do click
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => !opt.disabled && commit(opt.value)}
-                    className={[
+                    className={cn(
                       "flex items-center justify-between gap-3",
                       "rounded-xl px-3 py-2 text-sm",
                       opt.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
                       isActive ? "bg-slate-900/5" : "bg-transparent",
-                      !opt.disabled && !isActive ? "hover:bg-slate-900/5" : "",
-                    ].join(" ")}
+                      !opt.disabled && !isActive && "hover:bg-slate-900/5"
+                    )}
                   >
-                    <span className={isSelected ? "font-medium text-slate-900" : "text-slate-700"}>
+                    <span className={cn(isSelected ? "font-medium text-slate-900" : "text-slate-700")}>
                       {opt.label}
                     </span>
+
                     {isSelected ? (
-                      <span className="text-slate-700">✓</span>
+                      <span className="text-slate-500" aria-hidden="true">
+                        ✓
+                      </span>
                     ) : null}
                   </li>
                 );

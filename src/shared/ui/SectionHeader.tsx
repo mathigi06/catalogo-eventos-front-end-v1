@@ -1,11 +1,13 @@
 // src/shared/ui/SectionHeader.tsx
 import type { PropsWithChildren, ReactNode } from "react";
+import { cn } from "./cn";
 
 interface SectionHeaderProps extends PropsWithChildren {
-  kicker?: string; // texto pequeno acima do título
+  kicker?: string;
   align?: "left" | "center";
   description?: ReactNode;
   className?: string;
+  tone?: "neutral" | "primary" | "success" | "warning";
 }
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({
@@ -13,26 +15,40 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   children,
   align = "left",
   description,
-  className = "",
+  className,
+  tone = "primary",
 }) => {
-  const alignClass =
-    align === "center" ? "text-center items-center" : "text-left items-start";
+  const alignClass = align === "center" ? "text-center items-center" : "text-left items-start";
+
+  const kickerTone: Record<NonNullable<SectionHeaderProps["tone"]>, string> = {
+    neutral: "text-slate-500",
+    primary: "text-brand-primary",
+    success: "text-brand-success",
+    warning: "text-brand-warning",
+  };
 
   return (
-    <header
-      className={`flex flex-col gap-2 ${alignClass} ${className}`}
-    >
-      {kicker && (
-        <p className="text-[11px] tracking-[0.2em] uppercase text-[#9fb0c8] font-semibold">
+    <header className={cn("flex flex-col gap-2", alignClass, className)}>
+      {kicker ? (
+        <p
+          className={cn(
+            "text-xs font-semibold uppercase tracking-[0.14em]",
+            kickerTone[tone]
+          )}
+        >
           {kicker}
         </p>
-      )}
-      <h2 className="text-xl md:text-2xl font-extrabold">{children}</h2>
-      {description && (
-        <p className="text-xs md:text-sm text-[#cfe0fb] max-w-2xl">
+      ) : null}
+
+      <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">
+        {children}
+      </h2>
+
+      {description ? (
+        <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
           {description}
         </p>
-      )}
+      ) : null}
     </header>
   );
 };
